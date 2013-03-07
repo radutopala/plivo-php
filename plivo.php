@@ -1,10 +1,13 @@
 <?php
-require_once 'HTTP/Request2.php';
 
+namespace Plivo {
+    require_once 'HTTP/Request2.php';
 
-class PlivoError extends Exception { }
+use Guzzle\Http\Client;
 
+class PlivoError extends \Exception { }
 
+/*
 function validate_signature($uri, $post_params=array(), $signature, $auth_token) {
     ksort($post_params);
     foreach($post_params as $key => $value) {
@@ -13,6 +16,8 @@ function validate_signature($uri, $post_params=array(), $signature, $auth_token)
     $generated_signature = base64_encode(hash_hmac("sha1",$uri, $auth_token, true));
     return $generated_signature == $signature;
 }
+*/
+
 
 
 class RestAPI {
@@ -37,36 +42,43 @@ class RestAPI {
 
     private function request($method, $path, $params=array()) {
         $url = $this->api.rtrim($path, '/').'/';
-        if (!strcmp($method, "POST")) {
-            $req = new HTTP_Request2($url, HTTP_Request2::METHOD_POST);
-            $req->setHeader('Content-type: application/json');
-            if ($params) {
-                $req->setBody(json_encode($params));
-            }
-        } else if (!strcmp($method, "GET")) {
-            $req = new HTTP_Request2($url, HTTP_Request2::METHOD_GET);
-            $url = $req->getUrl();
-            $url->setQueryVariables($params);
-        } else if (!strcmp($method, "DELETE")) {
-            $req = new HTTP_Request2($url, HTTP_Request2::METHOD_DELETE);
-            $url = $req->getUrl();
-            $url->setQueryVariables($params);
-        }
-        $req->setAdapter('curl');
-        $req->setConfig(array(
-            'timeout' => 30,
-            'ssl_verify_peer' => FALSE,
-        ));
-        $req->setAuth($this->auth_id, $this->auth_token, HTTP_Request2::AUTH_BASIC);
-        $req->setHeader(array(
+
+        // Using Guzzle library ---------------------------------
+        $client = new Client($url, array(
+            'ssl.certificate_authority' => false,
+            'curl.options'              => array(
+                'CURLOPT_CONNECTTIMEOUT'    => 30,                
+            )
+        ));        
+
+
+
+        // headers
+        $headers = array(
             'Connection' => 'close',
             'User-Agent' => 'PHPPlivo',
-        ));
-        $r = $req->send();
-        $status = $r->getStatus();
-        $body = $r->getbody();
-        $response = json_decode($body, true);
-        return array("status" => $status, "response" => $response);
+        );
+
+        if (!strcmp($method, "POST")) {
+            $request = $client->post('', $headers, $params);
+            $request->addHeader('Content-type', 'application/json');
+
+        } else if (!strcmp($method, "GET")) {
+            $request = $client->get('', $headers, $params);
+            $request->getQuery()->merge($params);
+
+        } else if (!strcmp($method, "DELETE")) {
+            $request = $client->delete('', $headers, $params);
+            $request->getQuery()->merge($params);
+
+        }
+
+        $request->setAuth($this->auth_id, $this->auth_token);
+
+        $response = $request->send();
+        $responseData = $response->json();
+        $status = $response->getStatusCode();
+        return array("status" => $status, "response" => $responseData);
     }
     
     private function pop($params, $key) {
@@ -632,7 +644,7 @@ class Response extends Element {
         parent::__construct(NULL);
     }
 
-    public function toXML() {
+    public function toXML($header=FALSE) {
         $xml = parent::toXML($header=TRUE);
         return $xml;
     }
@@ -822,6 +834,6 @@ class DTMF extends Element {
     }
 }
 
-
+}
 
 ?>
