@@ -1,7 +1,18 @@
-Requirements
-------------
-php-curl
+Description
+===========
+Plivo PHP helper library with Composer support. Uses Guzzle as http client.
 
-php-openssl
 
-pear package HTTP_Request2
+###Usage
+
+
+
+
+Add ``adamh114/plivo-php`` as a dependency in your project's ``composer.json`` file:
+
+        {
+            "require": {
+                "adamh114/plivo-php": "dev-master"
+            }
+        }
+
