@@ -1,7 +1,6 @@
 <?php
 
 namespace Plivo {
-    require_once 'HTTP/Request2.php';
 
 use Guzzle\Http\Client;
 
