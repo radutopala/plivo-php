@@ -59,8 +59,8 @@ class RestAPI {
         );
 
         if (!strcmp($method, "POST")) {
-            $request = $client->post('', $headers, $params);
-            $request->addHeader('Content-type', 'application/json');
+            $request = $client->post('', $headers, json_encode($params));
+            $request->setHeader('Content-type', 'application/json');
 
         } else if (!strcmp($method, "GET")) {
             $request = $client->get('', $headers, $params);
