@@ -493,6 +493,10 @@ class Element {
             $this->attributes = array();
         }
         $this->name = get_class($this);
+        // take into account and remove namespace
+        $this->name = str_replace('Plivo\\','', $this->name);
+
+
         $this->body = $body;
         foreach ($this->attributes as $key => $value) {
             if (!in_array($key, $this->valid_attributes)) {
@@ -611,7 +615,6 @@ class Element {
         if (!(isset($xmlstr))) {
             $xmlstr = '';
         }
-
         if ($this->body) {
             $xmlstr .= "<".$this->getName().">".htmlspecialchars($this->body)."</".$this->getName().">";
         } else {
@@ -619,8 +622,8 @@ class Element {
         }
         if ($header === TRUE) {
             $xmlstr = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>".$xmlstr;
-        }
-        $xml = new SimpleXMLElement($xmlstr);
+        } 
+        $xml = new \SimpleXMLElement($xmlstr);
         $this->setAttributes($xml);
         foreach ($this->childs as $child) {
             $child->asChild($xml);
