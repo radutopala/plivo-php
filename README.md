@@ -8,11 +8,14 @@ Plivo PHP helper library with Composer support. Uses Guzzle as http client.
 
 
 
-Add ``adamh114/plivo-php`` as a dependency in your project's ``composer.json`` file:
+Add ``plivo/plivo-php`` as a dependency in your project's ``composer.json`` file:
 
         {
             "require": {
-                "adamh114/plivo-php": "dev-master"
+                "plivo/plivo-php": "dev-master"
             }
         }
 
+
+
+See the original repo at https://github.com/plivo/plivo-php

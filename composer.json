@@ -7,6 +7,7 @@
             "email": "adam.homsi@gmail.com"
         }
     ],
+    "license": "MIT",
     "require": {
         "guzzle/guzzle": "3.7.*"        
     },
